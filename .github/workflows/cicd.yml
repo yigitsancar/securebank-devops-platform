@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build-and-push:
+  build-push-deploy:
 
     runs-on: ubuntu-latest
 
@@ -37,9 +37,16 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker Image
-        run: |
-          docker build -t yigitsancar/securebank:latest .
+        run: docker build -t yigitsancar/securebank:latest .
 
       - name: Push Docker Image
-        run: |
-          docker push yigitsancar/securebank:latest
+        run: docker push yigitsancar/securebank:latest
+
+      - name: Deploy to AWS EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            ~/deploy-securebank.sh
