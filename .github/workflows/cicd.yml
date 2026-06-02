@@ -50,3 +50,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             ~/deploy-securebank.sh
+
+            export KUBECONFIG=$HOME/.kube/config
+
+            kubectl rollout restart deployment/securebank-backend -n securebank
+            kubectl rollout status deployment/securebank-backend -n securebank
